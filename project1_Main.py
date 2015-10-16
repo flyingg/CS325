@@ -82,7 +82,9 @@ def mssAlgorithm2(array):
 
 	return max
 
+'''Grant - Algo#2 '''
 
+'''Cierra - Algo#2 '''
 
 ########################################
 #Algorithm 3 - Divide & Conquer 
@@ -117,7 +119,9 @@ def mssAlgorithm3(array, leftEnd, rightEnd):
 
 	return max((leftEndMax+rightEndMax), mssAlgorithm3(array, leftEnd, middle), mssAlgorithm3(array, (middle + 1), rightEnd))
 
+'''Grant - Algo#3 '''
 
+'''Cierra - Algo#3 '''
 
 #############################
 #Algorithm 4 - Linear-Time 
@@ -138,6 +142,9 @@ def mssAlgorithm4(array):
 
 	return maxsum
 
+'''Grant - Algo#4 '''
+
+'''Cierra - Algo#4 '''
 
 #########################
 # END - Algorithms
@@ -192,7 +199,6 @@ def ParseInputFile(lineNumber):
 
 	testingAmount = len(newArray)
 	arrayLastElement = testingAmount - 1
-#	print newArray[arrayLastElement]
 	algo3Reult = mssAlgorithm3(newArray, 0, arrayLastElement)
 	finalStatement3 = "Algorithm3 result is: " + str(algo3Reult) + "\n"
 	print finalStatement3
@@ -247,49 +253,49 @@ def CreateRandomNumber(newArraySize):
 #	+ Prints results to screen AND runTimeResults.csv file
 ###########################################################
 def ComputeRunTimeAlgorithms(calculatedArray, sizeOfN):
-		startTime = time.time()
-		algo1Reult = mssAlgorithm1(calculatedArray)
-		finishTime = time.time()
-		totalRunTime1 = (finishTime - startTime)
+	startTime = time.time()
+	algo1Reult = mssAlgorithm1(calculatedArray)
+	finishTime = time.time()
+	totalRunTime1 = (finishTime - startTime)
 
-		finalStatement1 = "1: " + str(algo1Reult) + " :: " + str(totalRunTime1) + " seconds" 
-		print finalStatement1
-		
-		startTime = time.time()
-		algo2Reult = mssAlgorithm2(calculatedArray)
-		finishTime = time.time()
-		totalRunTime2 = (finishTime - startTime)
+	finalStatement1 = "1: " + str(algo1Reult) + " :: " + str(totalRunTime1) + " seconds" 
+	print finalStatement1
 
-		finalStatement2 = "2: " + str(algo2Reult) + " :: " + str(totalRunTime2) + " seconds" 
-		print finalStatement2
+	startTime = time.time()
+	algo2Reult = mssAlgorithm2(calculatedArray)
+	finishTime = time.time()
+	totalRunTime2 = (finishTime - startTime)
 
-		testingAmount = len(calculatedArray)
-		arrayLastElement = testingAmount - 1
-	#	print newArray[arrayLastElement]
-		startTime = time.time()
-		algo3Reult = mssAlgorithm3(calculatedArray, 0, arrayLastElement)
-		finishTime = time.time()
-		totalRunTime3 = (finishTime - startTime)
+	finalStatement2 = "2: " + str(algo2Reult) + " :: " + str(totalRunTime2) + " seconds" 
+	print finalStatement2
 
-		finalStatement3 = "3: " + str(algo3Reult) + " :: " + str(totalRunTime3) + " seconds" 
-		print finalStatement3
-		
-		startTime = time.time()
-		algo4Reult = mssAlgorithm4(calculatedArray)
-		finishTime = time.time()
-		totalRunTime4 = (finishTime - startTime)
+	testingAmount = len(calculatedArray)
+	arrayLastElement = testingAmount - 1
 
-		finalStatement4 = "4: " + str(algo4Reult) + " :: " + str(totalRunTime4) + " seconds" 
-		print finalStatement4
+	startTime = time.time()
+	algo3Reult = mssAlgorithm3(calculatedArray, 0, arrayLastElement)
+	finishTime = time.time()
+	totalRunTime3 = (finishTime - startTime)
 
-		runTimeDataFile = open('runTimeResults.csv', 'a')
-		writer = csv.writer(runTimeDataFile)
-		writer.writerow( ("", "", "", "") )
-		writer.writerow( ( sizeOfN, 1, algo1Reult, totalRunTime1) )
-		writer.writerow( ( sizeOfN, 2, algo2Reult, totalRunTime2) )
-		writer.writerow( ( sizeOfN, 3, algo3Reult, totalRunTime3) )
-		writer.writerow( ( sizeOfN, 4, algo4Reult, totalRunTime4) )
-		runTimeDataFile.close()
+	finalStatement3 = "3: " + str(algo3Reult) + " :: " + str(totalRunTime3) + " seconds" 
+	print finalStatement3
+
+	startTime = time.time()
+	algo4Reult = mssAlgorithm4(calculatedArray)
+	finishTime = time.time()
+	totalRunTime4 = (finishTime - startTime)
+
+	finalStatement4 = "4: " + str(algo4Reult) + " :: " + str(totalRunTime4) + " seconds" 
+	print finalStatement4
+
+	runTimeDataFile = open('runTimeResults.csv', 'a')
+	writer = csv.writer(runTimeDataFile)
+	writer.writerow( ("", "", "", "") )
+	writer.writerow( ( sizeOfN, 1, algo1Reult, totalRunTime1) )
+	writer.writerow( ( sizeOfN, 2, algo2Reult, totalRunTime2) )
+	writer.writerow( ( sizeOfN, 3, algo3Reult, totalRunTime3) )
+	writer.writerow( ( sizeOfN, 4, algo4Reult, totalRunTime4) )
+	runTimeDataFile.close()
 
 ##################################
 # 	CreateRandomArrays
@@ -310,7 +316,6 @@ def CreateRandomArrays():
 			tenRandomArrays.append(j)
 		
 		for k in range(0, 10):
-		#	print tenRandomArrays[k]
 			print "\nThis is the " + str(k + 1) + " array of element size :" + str(testArraySizes[i])
 			ComputeRunTimeAlgorithms(tenRandomArrays[k], testArraySizes[i])
 
