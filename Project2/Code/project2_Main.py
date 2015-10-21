@@ -1,5 +1,5 @@
 ##############################################################################################
-#CS325 - Project 1 
+#CS325 - Project 2
 #Contributors - Cierra Shawe, Grant Smith, Gerald Gale
 #Instructions: 
 #	- README.txt contains all of the instructions needed to run this file successfully 
