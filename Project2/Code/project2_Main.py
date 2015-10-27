@@ -3,9 +3,8 @@
 #Contributors - Cierra Shawe, Grant Smith, Gerald Gale
 #Instructions: 
 #	- README.txt contains all of the instructions needed to run this file successfully 
-#	- This file will run both random number generation and proof of correctness
-#		+ Select the one you want with the command line: 'python project1_Main.py -c'
-#		+ Default program in correctness if command line is entered in wrong
+#	- This file will run both any type of change funcion you need, including accuracy tests, 
+#	- and experimental tests for data 
 ##############################################################################################
 import sys
 import os.path
@@ -22,20 +21,41 @@ import math
 #############################
 #Algorithm 1 - Slow
 #############################
+# 	+ Helper Function: Handles the recursive calls externally for Change_Slow
+def Change_SlowPrepare(currencyValuesArray, amountToReturn):
+	if amountToReturn == 0:
+		return []
+	for coin in currencyValuesArray:
+		if coin == amountToReturn:
+			return [coin]
 
+	minimumCoins = -1
+	coins = []
+	for i in range(1, amountToReturn/2 + 1):
+		temp = []
+		temp.extend(Change_SlowPrepare(currencyValuesArray, i))
+		temp.extend(Change_SlowPrepare(currencyValuesArray, amountToReturn - i))
+		numberOfCoins = len(temp)
+
+		if minimumCoins == -1:
+			minimumCoins = numberOfCoins
+			coins = temp
+		elif numberOfCoins < minimumCoins:
+			minimumCoins = numberOfCoins
+			coins = temp
+	return coins
+
+#Final slow algorithm
 def Change_Slow(currencyValuesArray, amountToReturn):
-	maxSum = array[0]
-	
-	for i in range(0, len(array)):
-		for j in range(0, len(array)):
-			Sum = 0
-			for k in range(i, j):
-				Sum += array[k]
-				
-			if(Sum > maxSum):
-				maxSum = Sum
-				
-	return maxSum
+	coins = Change_SlowPrepare(currencyValuesArray, amountToReturn)
+
+	result = []
+	for coin in currencyValuesArray:
+		result.append(coins.count(coin))
+
+	result.append(len(coins))
+
+	return result
 
 
 ########################################
@@ -43,54 +63,54 @@ def Change_Slow(currencyValuesArray, amountToReturn):
 ########################################
 
 def Change_Greedy(currencyValuesArray, amountToReturn):
-  numArray = [0] * len(currencyValuesArray)
-  total = 0
-  for i in range(len(currencyValuesArray)-1,-1,-1):
-    if(currencyValuesArray[i] <= amountToReturn):
-      num = amountToReturn / currencyValuesArray[i]
-      numArray[i] = numArray[i] + num
-      total = total + num
-      amountToReturn -= num * currencyValuesArray[i]
+	numArray = [0] * len(currencyValuesArray)
+	total = 0
+	for i in range(len(currencyValuesArray)-1,-1,-1):
+		if(currencyValuesArray[i] <= amountToReturn):
+			num = amountToReturn / currencyValuesArray[i]
+			numArray[i] = numArray[i] + num
+			total = total + num
+			amountToReturn -= num * currencyValuesArray[i]
 
-  numArray.append(total) 
-  return numArray
+	numArray.append(total) 
+	return numArray
 	
 ########################################
 #Algorithm 3 - Dynamic  
 ########################################
 
 def Change_Dynamic(currencyValuesArray, amountToReturn):
-  minArray = [0]
-  firstCoinArray = [0]
-  coin = 0
+	minArray = [0]
+	firstCoinArray = [0]
+	coin = 0
 
-  for j in range(1, amountToReturn+1):
-    min = -1
-    for i in range(0, len(currencyValuesArray)):
-      if currencyValuesArray[i] <= j:
-        if min == -1:
-          min = 1 + minArray[j - currencyValuesArray[i]]
-          coin = i
-        elif 1 + minArray[j - currencyValuesArray[i]] < min:
-          min = 1 + minArray[j - currencyValuesArray[i]]
-          coin = i
-    minArray.append(min)
-    firstCoinArray.append(coin)
+	for j in range(1, amountToReturn+1):
+		min = -1
+		for i in range(0, len(currencyValuesArray)):
+			if currencyValuesArray[i] <= j:
+				if min == -1:
+					min = 1 + minArray[j - currencyValuesArray[i]]
+					coin = i
+				elif 1 + minArray[j - currencyValuesArray[i]] < min:
+					min = 1 + minArray[j - currencyValuesArray[i]]
+					coin = i
+		minArray.append(min)
+		firstCoinArray.append(coin)
 
-  coins = []
-  while amountToReturn > 0:
-    coins.append(currencyValuesArray[firstCoinArray[amountToReturn]])
-    amountToReturn = amountToReturn - currencyValuesArray[firstCoinArray[amountToReturn]]
+	coins = []
+	while amountToReturn > 0:
+		coins.append(currencyValuesArray[firstCoinArray[amountToReturn]])
+		amountToReturn = amountToReturn - currencyValuesArray[firstCoinArray[amountToReturn]]
 
-  numberOfCoins = len(coins)
+	numberOfCoins = len(coins)
 
-  result = []
-  for coin in currencyValuesArray:
-    result.append(coins.count(coin))
+	result = []
+	for coin in currencyValuesArray:
+		result.append(coins.count(coin))
 
-  result.append(numberOfCoins)
+	result.append(numberOfCoins)
 
-  return result
+	return result
 	
 #########################
 # END - Algorithms
@@ -103,199 +123,43 @@ def Change_Dynamic(currencyValuesArray, amountToReturn):
 # START - Programs 
 #########################
 
-#########################################################################
-# 	ParseInputFile
-#	+ Is THE function called that is used for grading
-#	+ It reads in MSS_Problems.txt
-#	+ Crunches the sum for all for algorithms
-#	+ Outputs the result onto the screen AND MSS_Results.txt for grading 
-#########################################################################
-def ParseInputFile(lineNumber):
-	print "\nYou are now calculating line #" + str(lineNumber + 1)
-	f = open("MSS_Problems.txt", "r")
+###############################################################
+# 	RunProgram
+#	+ Get input file and starts to run the needed program
+###############################################################
 
-	rowValue = f.readlines()
-	singleRow = rowValue[lineNumber]
+def RunProgram():
+	values = []
+	ammountToChange = []
 
-	newArray = []
-	newValue = ""
-	i = 0
-	isDone = False
-	while isDone == False:
-		if singleRow[i].isdigit() == True or singleRow[i] == '-':
-			newValue = str(newValue) + str(singleRow[i])
-		elif singleRow[i] == ',' or singleRow[i] == ']':
-			tempNumber = int(newValue)
-			newArray.append(tempNumber)
+	inputFile = open(sys.argv[1], "r")
+	while True:
+		lineValue = inputFile.readline()
+		if lineValue:
+			lineValue = lineValue.replace('[', '')
+			lineValue = lineValue.replace(']', '')
+			tempArray = lineValue.split(',')
+			temp2 = []
+			for i in tempArray:
+				temp2.append(int(i))
+
+			values.append(temp2)
+
+			lineValue = inputFile.readline()
+			ammountToChange.append(int(lineValue))
 		else:
-			newValue = ""
+			break
+
+	inputFile.close()
+
+	for i in range(0, len(values)):
+		currencyValuesValues = sorted(values[i])
+		amount = ammountToChange[i]
+		#slowResult = Change_Slow(currencyValuesValues, amount)
+		greedyResult = Change_Greedy(currencyValuesValues, amount)
+		dpResult = Change_Dynamic(currencyValuesValues, amount)
+		print "\nGreedy value is: ", str(greedyResult), "\nDynamic Result is: ", str(dpResult)
 		
-		if singleRow[i] == ']':
-			isDone = True
-		
-		i +=1
-	
-	algo1Reult = mssAlgorithm1(newArray)
-	finalStatement1 = "Algorithm1 result is: " + str(algo1Reult) + "\n"
-	print finalStatement1
-	
-	algo2Reult = mssAlgorithm2(newArray)
-	finalStatement2 = "Algorithm2 result is: " + str(algo2Reult) + "\n"
-	print finalStatement2
-
-	testingAmount = len(newArray)
-	arrayLastElement = testingAmount - 1
-	algo3Reult = mssAlgorithm3(newArray, 0, arrayLastElement)
-	finalStatement3 = "Algorithm3 result is: " + str(algo3Reult) + "\n"
-	print finalStatement3
-	
-	algo4Reult = mssAlgorithm4(newArray)
-	finalStatement4 = "Algorithm4 result is: " + str(algo4Reult) + "\n"
-	print finalStatement4
-	
-	#Output final results to MSS_Results.txt' for grading
-	with open('MSS_Results.txt', 'a') as myFile:
-		myFile.write("You are now calculating input data from line #" + str(lineNumber + 1) + "\n")
-		myFile.write(finalStatement1)
-		myFile.write(finalStatement2)
-		myFile.write(finalStatement3)
-		myFile.write(finalStatement4 + "\n")	
-
-##########################################
-# 	FileLineCount
-#	+ Gets line count of MSS_Problems.txt
-##########################################
-def FileLineCount():
-	lineCount = sum(1 for line in open('MSS_Problems.txt'))
-	return lineCount
-
-#######################################################
-# 	CreateRandomNumber
-#	+ Creates the random # for the running time tests
-#	+ Does check to make sure there is at least 1 >0 #
-#######################################################
-def CreateRandomNumber(newArraySize):
-	midwayPoint = (newArraySize / 2)
-
-	randomArray = []
-	for i in range(0,newArraySize):
-		#insures there is at least 1 positive number in the array 
-		if i == midwayPoint:
-			number = random.randint(1, 100)
-		else:
-			number = random.randint(-100, 100)
-			
-		randomArray.append(number)
-		
-	lengthOfTest = len(randomArray)
-	return randomArray
-
-
-###########################################################
-# 	ComputeRunTimeAlgorithms
-#	+ Is the function for Experimental Analysis 
-#	+ Computes running time for each algorithm 
-#	+ Is called for each array of each n size
-#	+ Prints results to screen AND runTimeResults.csv file
-###########################################################
-def ComputeRunTimeAlgorithms(calculatedArray, sizeOfN):
-	startTime = time.time()
-	algo1Reult = mssAlgorithm1(calculatedArray)
-	finishTime = time.time()
-	totalRunTime1 = (finishTime - startTime)
-	
-	finalStatement1 = "1: " + str(algo1Reult) + " :: " + str(totalRunTime1) + " seconds" 
-	print finalStatement1
-	
-	startTime = time.time()
-	algo2Reult = mssAlgorithm2(calculatedArray)
-	finishTime = time.time()
-	totalRunTime2 = (finishTime - startTime)
-	
-	finalStatement2 = "2: " + str(algo2Reult) + " :: " + str(totalRunTime2) + " seconds" 
-	print finalStatement2
-	
-	testingAmount = len(calculatedArray)
-	arrayLastElement = testingAmount - 1
-	startTime = time.time()
-	algo3Reult = mssAlgorithm3(calculatedArray, 0, arrayLastElement)
-	finishTime = time.time()
-	totalRunTime3 = (finishTime - startTime)
-	
-	finalStatement3 = "3: " + str(algo3Reult) + " :: " + str(totalRunTime3) + " seconds" 
-	print finalStatement3
-	
-	startTime = time.time()
-	algo4Reult = mssAlgorithm4(calculatedArray)
-	finishTime = time.time()
-	totalRunTime4 = (finishTime - startTime)
-	
-	finalStatement4 = "4: " + str(algo4Reult) + " :: " + str(totalRunTime4) + " seconds" 
-	print finalStatement4
-	
-	runTimeDataFile = open('alg4.csv', 'a')
-	writer = csv.writer(runTimeDataFile)
-	writer.writerow( ("", "", "", "") )
-	writer.writerow( ( sizeOfN, 1, algo1Reult, totalRunTime1) )
-	writer.writerow( ( sizeOfN, 2, algo2Reult, totalRunTime2) )
-	writer.writerow( ( sizeOfN, 3, algo3Reult, totalRunTime3) )
-	writer.writerow( ( sizeOfN, 4, algo4Reult, totalRunTime4) )
-	runTimeDataFile.close()
-
-##################################
-# 	CreateRandomArrays
-#	+ Creates the random arrays 
-#	+ 10 for each n size 
-##################################
-def CreateRandomArrays():
-	testArraySizes = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000]
-	runTimeDataFile = open('runTimeResults.csv', 'w')
-	writer = csv.writer(runTimeDataFile)
-	writer.writerow( ("Size of n", "Algorithm #", "Max Sum", "Run Time (s)") )
-	runTimeDataFile.close()
-	
-	for i in range(0, len(testArraySizes)):
-		tenRandomArrays = []
-		for j in range(0, len(testArraySizes)):
-			j = CreateRandomNumber(testArraySizes[i])
-			tenRandomArrays.append(j)
-		
-		for k in range(0, len(testArraySizes)):
-			print "\nThis is the " + str(k + 1) + " array of element size :" + str(testArraySizes[i])
-			ComputeRunTimeAlgorithms(tenRandomArrays[k], testArraySizes[i])
-
-
-#######################################################
-# 	TestExample
-#	+ Tests the array first stated in the assignment 
-#	+ Best used as accuracy check 
-#######################################################
-def TestExample():
-	exampleArray = [31, -41, 59, 26, -53, 58, 97, -93, -23, 84]
-	print "Algo 1 sum: " + str(mssAlgorithm1(exampleArray))
-	print "Algo 1 sum: " + str(mssAlgorithm2(exampleArray))
-	print "Algo 1 sum: " + str(mssAlgorithm3(exampleArray, 0, len(exampleArray) - 1))
-	print "Algo 1 sum: " + str(mssAlgorithm4(exampleArray))
-
-#######################################################
-# 	TestRunTime
-#	+ Tests run time for Experimental Analysis
-#######################################################
-def TestRunTime():
-	CreateRandomArrays()
-
-##########################################################
-# 	TestCorrectness
-#	+ Tests Correctness - Is used for calculating Grade!
-##########################################################
-def TestCorrectness():
-	numberOfArraysToCalculate = FileLineCount()
-	
-	i = 0
-	while i < numberOfArraysToCalculate:
-		ParseInputFile(i)
-		i += 1
-
 ########################################
 # END - Programs 
 ########################################
@@ -307,49 +171,44 @@ def TestCorrectness():
 #	+ Usage 'python project2_Main.py input_file.txt { -runBrute | -runGreedy | -runDP | -runTestCorrect| -runExperiment }'
 ########################################
 def CheckFirstArg():
-	if ( len(sys.argv) > 1 ):
-		if (os.path.isfile(sys.argv[1]) == True):
-			print "\nThe first argument is: ", str(sys.argv[1])
-			return True
-		else:
-			print "\nThe file: ", str(sys.argv[1]), " does not exist in this directory. Enter correct file name"
-			return False
+	if (os.path.isfile(sys.argv[1]) == True):
+		return True
 	else:
-		print "You did not enter the name of the file we need to read!"
+		print str(sys.argv[1]), " is not a file in this directory."
+		return False
 
 def CheckSecondArg():
 	if ( len(sys.argv) > 2 ):
-		print "The second argument is: ", str(sys.argv[2])
-
 		if (sys.argv[2] == "-runBrute"):
+			RunProgram()
 			return True
 		elif (sys.argv[2] == "-runGreedy"):
+			RunProgram()
 			return True
 		elif (sys.argv[2] == "-runDP"):
+			RunProgram()
 			return True
 		elif (sys.argv[2] == "-runTestCorrect"):
+			RunProgram()
 			return True
 		elif (sys.argv[2] == "-runExperiment"):
+			RunProgram()
 			return True
 		else:
-			print "You did not enter the correct second argument"
+			print "\n", str(sys.argv[2]), " is not a valid 2nd arugument."
 			return False
 	else:
-		print "You did not enter a 2nd argument"
+		print "\nYou did not enter a 2nd argument"
 		return False
 
 
 if __name__ == "__main__":
-	print "\nthe number of args is: ", str(len(sys.argv))
-	
 	if ( len(sys.argv) > 1 ):
 		if (CheckFirstArg() == False):
 			print "\nUsage: 'python project2_Main.py input_file.txt { -runBrute | -runGreedy | -runDP | -runTestCorrect| -runExperiment }'"
 		elif (CheckSecondArg() == False):
-			print "You did not enter the correct 2nd argument\n\nUsage: 'python project2_Main.py input_file.txt { -runBrute | -runGreedy | -runDP | -runTestCorrect| -runExperiment }'\n"
-		elif (CheckFirstArg() == True and CheckSecondArg() == True):
-			print "Both things are right"
+			print "\nUsage: 'python project2_Main.py input_file.txt { -runBrute | -runGreedy | -runDP | -runTestCorrect| -runExperiment }'"
 		else:
-			print "Nothing came up"
+			print "\nEverything is OK!\n"
 	else:
-		print "You do not have enough arguments"
+		print "\nYou do not have enough arguments.\n"
