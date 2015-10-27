@@ -7,10 +7,11 @@
 #		+ Select the one you want with the command line: 'python project1_Main.py -c'
 #		+ Default program in correctness if command line is entered in wrong
 ##############################################################################################
+import sys
+import os.path
 import time
 import random 
 import csv
-import sys
 import math
 
 
@@ -19,10 +20,10 @@ import math
 #########################
 
 #############################
-#Algorithm 1 - Brute Force
+#Algorithm 1 - Slow
 #############################
 
-def Change_Brute(currencyValuesArray, amountToReturn):
+def Change_Slow(currencyValuesArray, amountToReturn):
 	maxSum = array[0]
 	
 	for i in range(0, len(array)):
@@ -42,48 +43,54 @@ def Change_Brute(currencyValuesArray, amountToReturn):
 ########################################
 
 def Change_Greedy(currencyValuesArray, amountToReturn):
-	arrayLength = len(array) - 1
-	maxSum = array[0]
-	
-	for i in range(0, arrayLength):
-		Sum = 0
-		j = i
-		for j in range(j, arrayLength):
-			Sum += array[j]
-			if Sum > maxSum:
-				maxSum = Sum
-				
-	return maxSum
+  numArray = [0] * len(currencyValuesArray)
+  total = 0
+  for i in range(len(currencyValuesArray)-1,-1,-1):
+    if(currencyValuesArray[i] <= amountToReturn):
+      num = amountToReturn / currencyValuesArray[i]
+      numArray[i] = numArray[i] + num
+      total = total + num
+      amountToReturn -= num * currencyValuesArray[i]
+
+  numArray.append(total) 
+  return numArray
 	
 ########################################
 #Algorithm 3 - Dynamic  
 ########################################
 
 def Change_Dynamic(currencyValuesArray, amountToReturn):
-	
-	if left == right:
-		return (array[left])
-		
-	mid = int((left + right)/2)
-	
-	leftSum = 0
-	leftMax = array[0]
-	for i in range(mid, left-1, -1):
-		leftSum += array[i]
-		if leftMax < leftSum:
-			leftMax = leftSum
-		
-	rightSum = 0
-	rightMax = array[mid + 1]
-	for k in range((mid + 1), right):
-		rightSum += array[k]
-		if rightMax < rightSum:
-			rightMax = rightSum
-			
-	l = mssAlgorithm3(array, left, mid)
-	r = mssAlgorithm3(array, mid + 1, right)
-	
-	return max((leftMax + rightMax), l, r)
+  minArray = [0]
+  firstCoinArray = [0]
+  coin = 0
+
+  for j in range(1, amountToReturn+1):
+    min = -1
+    for i in range(0, len(currencyValuesArray)):
+      if currencyValuesArray[i] <= j:
+        if min == -1:
+          min = 1 + minArray[j - currencyValuesArray[i]]
+          coin = i
+        elif 1 + minArray[j - currencyValuesArray[i]] < min:
+          min = 1 + minArray[j - currencyValuesArray[i]]
+          coin = i
+    minArray.append(min)
+    firstCoinArray.append(coin)
+
+  coins = []
+  while amountToReturn > 0:
+    coins.append(currencyValuesArray[firstCoinArray[amountToReturn]])
+    amountToReturn = amountToReturn - currencyValuesArray[firstCoinArray[amountToReturn]]
+
+  numberOfCoins = len(coins)
+
+  result = []
+  for coin in currencyValuesArray:
+    result.append(coins.count(coin))
+
+  result.append(numberOfCoins)
+
+  return result
 	
 #########################
 # END - Algorithms
@@ -300,43 +307,49 @@ def TestCorrectness():
 #	+ Usage 'python project2_Main.py input_file.txt { -runBrute | -runGreedy | -runDP | -runTestCorrect| -runExperiment }'
 ########################################
 def CheckFirstArg():
-	print "The first argument is: ", str(sys.argv[1])
-
-	return True
+	if ( len(sys.argv) > 1 ):
+		if (os.path.isfile(sys.argv[1]) == True):
+			print "\nThe first argument is: ", str(sys.argv[1])
+			return True
+		else:
+			print "\nThe file: ", str(sys.argv[1]), " does not exist in this directory. Enter correct file name"
+			return False
+	else:
+		print "You did not enter the name of the file we need to read!"
 
 def CheckSecondArg():
-	print "The second argument is: ", str(sys.argv[2])
+	if ( len(sys.argv) > 2 ):
+		print "The second argument is: ", str(sys.argv[2])
 
-	return True
+		if (sys.argv[2] == "-runBrute"):
+			return True
+		elif (sys.argv[2] == "-runGreedy"):
+			return True
+		elif (sys.argv[2] == "-runDP"):
+			return True
+		elif (sys.argv[2] == "-runTestCorrect"):
+			return True
+		elif (sys.argv[2] == "-runExperiment"):
+			return True
+		else:
+			print "You did not enter the correct second argument"
+			return False
+	else:
+		print "You did not enter a 2nd argument"
+		return False
 
 
 if __name__ == "__main__":
+	print "\nthe number of args is: ", str(len(sys.argv))
+	
 	if ( len(sys.argv) > 1 ):
-		if (CheckFirstArg() == True && CheckSecondArg() == True):
-			print "Both things are right"
-
-		elif (CheckFirstArg() == False && CheckSecondArg() == False):
-			print "Both things are wrong"
-		elif (CheckFirstArg() == False):
-			print "You do not have the correct type of input_file"
-			print "It needs to be a .txt and be in the coin format below"
-			print "[1, 2, 4, 8]\n15\n"
+		if (CheckFirstArg() == False):
+			print "\nUsage: 'python project2_Main.py input_file.txt { -runBrute | -runGreedy | -runDP | -runTestCorrect| -runExperiment }'"
 		elif (CheckSecondArg() == False):
 			print "You did not enter the correct 2nd argument\n\nUsage: 'python project2_Main.py input_file.txt { -runBrute | -runGreedy | -runDP | -runTestCorrect| -runExperiment }'\n"
+		elif (CheckFirstArg() == True and CheckSecondArg() == True):
+			print "Both things are right"
 		else:
 			print "Nothing came up"
-
-		if (sys.argv[1] == "-r"):
-			#TEST - RUN TIME!!!
-			TestRunTime()
-		elif (sys.argv[1] == "-c"):
-			#TEST - CORRECTNESS!!!
-			TestCorrectness()
-		elif (sys.argv[1] == "-e"):
-			#TEST - EXAMPLE!!!
-			TestExample()
-		else:
-			print "You did not enter the correct arguments\n\nEnter 'python project1_Main.py -c'"
 	else:
-		#Default to correctness in case note enough arguments are entered - needed for assignment 
-		TestCorrectness()
+		print "You do not have enough arguments"
