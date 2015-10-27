@@ -11,6 +11,7 @@ import time
 import random 
 import csv
 import sys
+import math
 
 
 #########################
@@ -18,10 +19,10 @@ import sys
 #########################
 
 #############################
-#Algorithm 1 - Enumeration 
+#Algorithm 1 - Brute Force
 #############################
 
-def mssAlgorithm1(array):
+def Change_Brute(currencyValuesArray, amountToReturn):
 	maxSum = array[0]
 	
 	for i in range(0, len(array)):
@@ -37,10 +38,10 @@ def mssAlgorithm1(array):
 
 
 ########################################
-#Algorithm 2 - Better Enumeration 
+#Algorithm 2 - Greedy 
 ########################################
 
-def mssAlgorithm2(array):
+def Change_Greedy(currencyValuesArray, amountToReturn):
 	arrayLength = len(array) - 1
 	maxSum = array[0]
 	
@@ -55,10 +56,10 @@ def mssAlgorithm2(array):
 	return maxSum
 	
 ########################################
-#Algorithm 3 - Divide & Conquer 
+#Algorithm 3 - Dynamic  
 ########################################
 
-def mssAlgorithm3(array, left, right):
+def Change_Dynamic(currencyValuesArray, amountToReturn):
 	
 	if left == right:
 		return (array[left])
@@ -84,33 +85,6 @@ def mssAlgorithm3(array, left, right):
 	
 	return max((leftMax + rightMax), l, r)
 	
-	
-#############################
-#Algorithm 4 - Linear-Time 
-#############################
-
-def mssAlgorithm4(array):
-	
-	maxSum = array[0] 
-	maxCur = array[0] 
-	if maxCur < 0: 
-		minCur = maxCur
-	else:
-		minCur = 0
-	
-	for i in range(1, len(array) - 1):
-		maxCur += array[i]
-		if (maxCur - minCur) > maxSum:
-			maxSum = maxCur - minCur
-		if maxCur < minCur:
-			minCur = maxCur
-			
-		if maxCur > maxSum:
-			maxSum = maxCur
-			
-	return maxSum
-
-
 #########################
 # END - Algorithms
 #########################
@@ -321,11 +295,37 @@ def TestCorrectness():
 
 
 ########################################
-# MAIN
+# 	MAIN
+#	+ Declaring "main"
+#	+ Usage 'python project2_Main.py input_file.txt { -runBrute | -runGreedy | -runDP | -runTestCorrect| -runExperiment }'
 ########################################
-#Declaring "main"
+def CheckFirstArg():
+	print "The first argument is: ", str(sys.argv[1])
+
+	return True
+
+def CheckSecondArg():
+	print "The second argument is: ", str(sys.argv[2])
+
+	return True
+
+
 if __name__ == "__main__":
 	if ( len(sys.argv) > 1 ):
+		if (CheckFirstArg() == True && CheckSecondArg() == True):
+			print "Both things are right"
+
+		elif (CheckFirstArg() == False && CheckSecondArg() == False):
+			print "Both things are wrong"
+		elif (CheckFirstArg() == False):
+			print "You do not have the correct type of input_file"
+			print "It needs to be a .txt and be in the coin format below"
+			print "[1, 2, 4, 8]\n15\n"
+		elif (CheckSecondArg() == False):
+			print "You did not enter the correct 2nd argument\n\nUsage: 'python project2_Main.py input_file.txt { -runBrute | -runGreedy | -runDP | -runTestCorrect| -runExperiment }'\n"
+		else:
+			print "Nothing came up"
+
 		if (sys.argv[1] == "-r"):
 			#TEST - RUN TIME!!!
 			TestRunTime()
