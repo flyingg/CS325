@@ -6,5 +6,5 @@ Instructions:
 - Using a FTP uploade both Coin1.txt AND project2_Main.py to the same directory 
 + Make sure Coin1.txt AND project2_Main.py are the ONLY 2 files in the directory to keep things neat 
 
-Run projectMain.py using the command “python project2_Main.py -c}” 
+Run projectMain.py using the command “python project2_Main.py -exp” 
 The program will run. There should be a new file called “Coin1change.txt” in the same directory Coin1.txt AND project1_Main.py are in. That file will have the results that you need
