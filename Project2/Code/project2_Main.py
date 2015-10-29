@@ -24,44 +24,42 @@ sys.setrecursionlimit(10000)
 #############################
 # 	+ Helper Function: Handles the recursive calls externally for Change_Slow
 
-def changeSlow(currencyValuesArray, k):
-	#If there is a single coin with k value, use it
-	if k in currencyValuesArray:
-		solution = []
-		for i in range(0,len(currencyValuesArray)):
-			solution.append(0)
-		for i in range(0, len(currencyValuesArray)):
-			if currencyValuesArray[i] == k and len(solution) == len(currencyValuesArray):
-				solution[i] = 1
-				solution.append(1)
-		return solution
-	else:	
-		solution = []
-		for i in range(0, len(currencyValuesArray)):
-			solution.append(0)
-		minCoin = k
-		solutionArray = []
-		for j in range(1, k):#(i < number of denominations)
-			solution1 = changeSlow(currencyValuesArray, j)
-			solution2 = changeSlow(currencyValuesArray, k-j)
-			newCoinCount = solution1[-1] + solution2[-1]
-			solution = [sum(x) for x in zip(solution1, solution2)]
-			solutionArray.append(solution)
-		for sol in solutionArray:
-			if len(currencyValuesArray) == 3:
-				if (sol[-1] < minCoin) and (sol[-1] != 0) and (sol[0] < currencyValuesArray[1]):
-					minCoin = sol[-1]
-					solution = sol
-					return solution
-			elif len(currencyValuesArray) == 4:
-				if (sol[-1] < minCoin) and (sol[-1] != 0) and ():
-					minCoin = sol[-1]
-					solution = sol
-					return solution
-
-	return solution
-
-
+def changeSlow(array, change):
+	solution = []
+	result  = []
+	for i in range(0,len(array)+1):
+		solution.append(0)
+	
+	minChange = change
+	print change/array[-1]
+	
+	for i in range(0, change/array[-1]+1): #1
+		for j in range(0, change/array[-2]+1):#2
+				for k in range(0, change/array[-3]+1):#3
+					for l in range(0, change/array[-4]+1):#4
+						if len(array) >= 5:
+							for m in range(0, change/array[-5]+1):#5
+								if (i*array[4] + j*array[3]+ k*array[2]+l*array[1]+m*array[0]) == change:
+									solution[0] = m
+									solution[1] = l
+									solution[2] = k
+									solution[3] = j
+									solution[4] = i
+									solution[5] = i+j+k+l+m
+									if solution[5] < minChange:
+										minChange = solution[5]
+						else:
+							if (i*array[3] + j*array[2] + k*array[1]+ l*array[0]) == change:
+								solution[0] = l
+								solution[1] = k
+								solution[2] = j
+								solution[3] = i
+								solution[4] = i+j+k+l
+								if solution[4] < minChange:
+									minChange = solution[4]
+									result = solution
+										
+	return result
 '''else: 
         min_length = 0
         min_configuration = []
@@ -194,7 +192,7 @@ def writeOutput(array, result, filename, time):
 	file = open(filename, "a") #we want to append, not truncate
 	file.write(str(array) + "\n")
 	file.write(str(result) + "\n")
-	file.write(str(time) + "\n")
+	#file.write(str(time) + "\n") #timing write for plotting run time
 	file.close()
 
 def parser():
@@ -233,9 +231,7 @@ def funRun(funName, vals, change, fname):
 		finishTime = time.time()
 		runtime = (finishTime - startTime)
 		result = array.pop()
-		print array
-		print result
-		writeOutput(array, result, fname, runtime)
+		writeOutput(array, result, fname, runtime*1000000)
 		
 		
 def runProgram(arg):
@@ -264,9 +260,9 @@ def runProgram(arg):
 	elif arg == 5: #experiment aka all
 		#writeOutput("Slow:", "", outputFile)
 		#funRun(changeSlow, values, ammountToChange, outputFile)
-		writeOutput("Greedy:", "", outputFile)
+		writeOutput("Greedy:", "", outputFile, "")
 		funRun(changeGreedy, values, ammountToChange, outputFile)
-		writeOutput("\nDP:", "", outputFile)
+		writeOutput("\nDP:", "", outputFile, "")
 		funRun(changeDP, values, ammountToChange, outputFile)
 
 ########################################
