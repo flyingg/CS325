@@ -284,9 +284,7 @@ def CheckFirstArg():
 
 def CheckSecondArg():
 	if ( len(sys.argv) > 2 ):
-		if (sys.argv[2] == "-brute"):
-			return 1
-		elif (sys.argv[2] == "-greedy"):
+		if (sys.argv[2] == "-greedy"):
 			return 2
 		elif (sys.argv[2] == "-dp"):
 			return 3
