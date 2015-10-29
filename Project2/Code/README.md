@@ -7,4 +7,4 @@ Instructions:
 + Make sure Coin1.txt AND project2_Main.py are the ONLY 2 files in the directory to keep things neat 
 
 Run projectMain.py using the command “python project2_Main.py -exp” 
-The program will run (changeSlow has been commented out on lines 261-2 due to run time). There should be a new file called “Coin1change.txt” in the same directory Coin1.txt AND project1_Main.py are in. That file will have the results that you need
+The program will run both the greedy and dynamic programming solutions (changeSlow has been commented out on lines 261-2 due to run time). Optionally, you can use "-greedy" or " -dp" to run only that specific algorithm. There should be a new file called “Coin1change.txt” in the same directory Coin1.txt AND project1_Main.py are in. That file will have the results that you need
