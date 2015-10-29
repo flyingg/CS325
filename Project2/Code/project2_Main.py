@@ -14,7 +14,7 @@ import csv
 import math
 import re
 
-
+sys.setrecursionlimit(10000)
 #########################
 # START - Algorithms
 #########################
@@ -23,41 +23,103 @@ import re
 #Algorithm 1 - Slow
 #############################
 # 	+ Helper Function: Handles the recursive calls externally for Change_Slow
-def Change_SlowPrepare(currencyValuesArray, amountToReturn):
-	if amountToReturn == 0:
-		return []
-	for coin in currencyValuesArray:
-		if coin == amountToReturn:
-			return [coin]
 
-	minimumCoins = -1
-	coins = []
-	for i in range(1, amountToReturn/2 + 1):
-		temp = []
-		temp.extend(Change_SlowPrepare(currencyValuesArray, i))
-		temp.extend(Change_SlowPrepare(currencyValuesArray, amountToReturn - i))
-		numberOfCoins = len(temp)
+def changeSlow(currencyValuesArray, k):
+	#If there is a single coin with k value, use it
+	if k in currencyValuesArray:
+		solution = []
+		for i in range(0,len(currencyValuesArray)):
+			solution.append(0)
+		for i in range(0, len(currencyValuesArray)):
+			if currencyValuesArray[i] == k and len(solution) == len(currencyValuesArray):
+				solution[i] = 1
+				solution.append(1)
+		return solution
+	else:	
+		solution = []
+		for i in range(0, len(currencyValuesArray)):
+			solution.append(0)
+		minCoin = k
+		solutionArray = []
+		for j in range(1, k):#(i < number of denominations)
+			solution1 = changeSlow(currencyValuesArray, j)
+			solution2 = changeSlow(currencyValuesArray, k-j)
+			newCoinCount = solution1[-1] + solution2[-1]
+			solution = [sum(x) for x in zip(solution1, solution2)]
+			solutionArray.append(solution)
+		for sol in solutionArray:
+			if len(currencyValuesArray) == 3:
+				if (sol[-1] < minCoin) and (sol[-1] != 0) and (sol[0] < currencyValuesArray[1]):
+					minCoin = sol[-1]
+					solution = sol
+					return solution
+			elif len(currencyValuesArray) == 4:
+				if (sol[-1] < minCoin) and (sol[-1] != 0) and ():
+					minCoin = sol[-1]
+					solution = sol
+					return solution
 
-		if minimumCoins == -1:
-			minimumCoins = numberOfCoins
-			coins = temp
-		elif numberOfCoins < minimumCoins:
-			minimumCoins = numberOfCoins
-			coins = temp
-	return coins
+	return solution
 
-#Final slow algorithm
-def changeSlow(currencyValuesArray, amountToReturn):
-	coins = Change_SlowPrepare(currencyValuesArray, amountToReturn)
 
-	result = []
-	for coin in currencyValuesArray:
-		result.append(coins.count(coin))
+'''else: 
+        min_length = 0
+        min_configuration = []
+        for coin in coins:
+            results = slowChange(k - coin, coins, cache)
+            if results != []:
+                if min_length == 0 or (1 + len(results)) < len(min_configuration):
+                    min_configuration = [coin] + results
+                    min_length = len(min_configuration)
+                    cache[k] = min_configuration
+        #print "second print", cache
+        return cache
 
-	result.append(len(coins))
+def changeSlow(coinValueList,change):
+	minCoins = change
+	if c in coinValueList:
+		knownResults[c] = 1
+		return 1
+	elif knownResults[change] > 0:
+		return knownResults[change]
+	else:
+		for i in (c for c in coinValueList if c <= change):
+			numCoins = 1 + changeSlow(coinValueList, change-i, knownResults)
+		if numCoins < minCoins:
+			minCoins = numCoins
+			knownResults[change] = minCoins
+	coinValueList.append(minCoins)
+	return coinValueList
+	
 
-	return result
-
+def slowChange(coins, k, cache = []):
+    if k in cache:
+        return cache[k]
+		
+    elif k in coins:  
+		# if k in coins, nothing to do but return.
+        cache[k] = [k]
+        return cache[k]
+		
+    elif min(coins) > k:  
+		# if the largest coin is greater then the k, there's nothing we can do.
+        cache[k] = []
+        return cache[k]
+		
+    else:  # check for each coin, keep track of the minimun configuration, then return it.
+        min_length = 0
+        min_configuration = []
+        for coin in coins:
+            results = slowChange(k - coin, coins, cache)
+            if results != []:
+                if min_length == 0 or (1 + len(results)) < len(min_configuration):
+                    min_configuration = [coin] + results
+                    min_length = len(min_configuration)
+                    cache[k] = min_configuration
+        #print "second print", cache
+        return cache
+		
+'''
 
 ########################################
 #Algorithm 2 - Greedy 
@@ -84,7 +146,7 @@ def changeDP(currencyValuesArray, amountToReturn):
 	minArray = [0]
 	firstCoinArray = [0]
 	coin = 0
-
+	
 	for j in range(1, amountToReturn+1):
 		min = -1
 		for i in range(0, len(currencyValuesArray)):
@@ -97,20 +159,20 @@ def changeDP(currencyValuesArray, amountToReturn):
 					coin = i
 		minArray.append(min)
 		firstCoinArray.append(coin)
-
+		
 	coins = []
 	while amountToReturn > 0:
 		coins.append(currencyValuesArray[firstCoinArray[amountToReturn]])
 		amountToReturn = amountToReturn - currencyValuesArray[firstCoinArray[amountToReturn]]
-
+		
 	numberOfCoins = len(coins)
-
+	
 	result = []
 	for coin in currencyValuesArray:
 		result.append(coins.count(coin))
-
+		
 	result.append(numberOfCoins)
-
+	
 	return result
 	
 #########################
@@ -128,14 +190,13 @@ def changeDP(currencyValuesArray, amountToReturn):
 # 	RunProgram
 #	+ Get input file and starts to run the needed program
 ###############################################################
-def writeOutput(array, result, filename):
+def writeOutput(array, result, filename, time):
 	file = open(filename, "a") #we want to append, not truncate
 	file.write(str(array) + "\n")
 	file.write(str(result) + "\n")
+	file.write(str(time) + "\n")
 	file.close()
-	
 
-	
 def parser():
 	vals = []
 	change = []
@@ -163,14 +224,19 @@ def parser():
 	return (vals, change)
 
 def funRun(funName, vals, change, fname):
+	
 	for i in range(0, len(vals)):
+		startTime = time.time()
 		currencyValues = sorted(vals[i])
 		amount = change[i]
 		array = funName(currencyValues, amount)
+		finishTime = time.time()
+		runtime = (finishTime - startTime)
 		result = array.pop()
 		print array
 		print result
-		writeOutput(array, result, fname)
+		writeOutput(array, result, fname, runtime)
+		
 		
 def runProgram(arg):
 	values = []
@@ -201,7 +267,7 @@ def runProgram(arg):
 		writeOutput("Greedy:", "", outputFile)
 		funRun(changeGreedy, values, ammountToChange, outputFile)
 		writeOutput("\nDP:", "", outputFile)
-		funRun(changeGreedy, values, ammountToChange, outputFile)
+		funRun(changeDP, values, ammountToChange, outputFile)
 
 ########################################
 # END - Programs 
