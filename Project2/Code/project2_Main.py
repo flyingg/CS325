@@ -288,8 +288,6 @@ def CheckSecondArg():
 			return 2
 		elif (sys.argv[2] == "-dp"):
 			return 3
-		elif (sys.argv[2] == "-test"):
-			return 4
 		elif (sys.argv[2] == "-exp"):
 			return 5
 		else:
@@ -303,14 +301,14 @@ def CheckSecondArg():
 if __name__ == "__main__":
 	if ( len(sys.argv) > 1 ):
 		if (CheckFirstArg() == False):
-			print "\nUsage: 'python project2_Main.py input_file.txt { -brute | -greedy | -dp | -test| -exp }'"
+			print "\nUsage: 'python project2_Main.py input_file.txt { -greedy | -dp | -exp }'"
 		else:
 			arg = CheckSecondArg()
 			if (arg == False):
-				print "\nUsage: 'python project2_Main.py input_file.txt { -brute | -greedy | -dp | -test| -exp }'"
+				print "\nUsage: 'python project2_Main.py input_file.txt { -greedy | -dp | -exp }'"
 			else:
 				print "\nValid Input, let's go!\n"
 				runProgram(arg)
 	else:
 		print "\nYou do not have enough arguments.\n"
-		print "\nUsage: 'python project2_Main.py input_file.txt { -brute | -greedy | -dp | -test| -exp }'" 
+		print "\nUsage: 'python project2_Main.py input_file.txt { -greedy | -dp | -exp }'" 
